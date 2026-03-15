@@ -39,6 +39,7 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
 .usage-pill{font-family:var(--mono);font-size:10px;padding:3px 9px;border-radius:20px;background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)}
 .usage-pill.warn{background:var(--amber-bg);border-color:#fde68a;color:var(--amber)}
 .usage-pill.full{background:var(--red-bg);border-color:#fecaca;color:var(--red)}
+.usage-pill.super{background:var(--purple-bg);border-color:#ddd6fe;color:var(--purple)}
 .btn-signout{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;transition:all 0.15s}
 .btn-signout:hover{border-color:var(--border2);color:var(--ink)}
 
@@ -133,7 +134,28 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
 .formula-meta span{display:block;font-size:11px;color:var(--ink2);margin-bottom:2px}
 .formula-meta span b{color:var(--ink);font-weight:500}
 .flashcard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:520px){.flashcard-grid{grid-template-columns:1fr}}
+@media(max-width:600px){
+  .flashcard-grid{grid-template-columns:1fr}
+  nav{flex-wrap:wrap;gap:10px;padding:1rem 0 1.5rem}
+  .nav-user,.nav-links{flex-wrap:wrap;gap:6px}
+  .user-email{max-width:120px}
+  .card{padding:1.25rem}
+  .tabs{gap:1px}
+  .tab{padding:6px 10px;font-size:11px}
+  .def-row{grid-template-columns:1fr;display:flex;flex-direction:column}
+  .def-term{border-right:none;border-bottom:1px solid var(--blue-border)}
+  .about-features{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr}
+  .contact-info{grid-template-columns:1fr}
+  .res-actions{flex-wrap:wrap}
+  .count-row{flex-wrap:wrap;gap:8px}
+  .drop{padding:1.5rem 1rem}
+  .mcq-item{padding:0.9rem 1rem}
+  .formula-card{padding:0.9rem 1rem}
+  .notes-h2{font-size:15px}
+  .modal{padding:1.25rem}
+  .about-hero h1{font-size:1.6rem}
+}
 .flashcard{border:1.5px solid var(--purple);border-radius:12px;background:var(--bg2);cursor:pointer;perspective:600px;min-height:160px;position:relative}
 .fc-inner{width:100%;height:100%;transition:transform 0.45s;transform-style:preserve-3d;position:relative;min-height:160px}
 .flashcard.flipped .fc-inner{transform:rotateY(180deg)}
@@ -398,7 +420,7 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
       <button class="btn-primary" onclick="submitContact()">Send Message</button>
     </div>
     <div class="contact-info">
-      <div class="contact-info-item"><div class="ci-icon">📧</div><h4>Email</h4><p>aymanafjal09@gmail.com</p></div>
+      <div class="contact-info-item"><div class="ci-icon">📧</div><h4>Email</h4><p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a5c4dcc8c4cbc4c3cfc4c9959ce5c2c8c4ccc98bc6cac8">[email&#160;protected]</a></p></div>
       <div class="contact-info-item"><div class="ci-icon">🌍</div><h4>Based in</h4><p>Bangladesh</p></div>
     </div>
   </div>
@@ -444,10 +466,10 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
   </div>
 </div>
 
-<script>
-const API = 'https://noitar-notes.onrender.com';
-const SUPABASE_URL = 'https://iphreeojqmhzaflarfhy.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwaHJlZW9qcW1oemFmbGFyZmh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NjYyMzUsImV4cCI6MjA4OTE0MjIzNX0.g8gzBNXLZrAhC3yxy9Hidj0FxMt_1lEAJQhWwFnAeos';
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const API = 'http://localhost:8000';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -494,12 +516,17 @@ async function refreshUsage() {
     if (!res.ok) return;
     const data = await res.json();
     const pill = document.getElementById('usage-pill');
-    pill.textContent = `${data.usage}/${data.limit}`;
-    pill.className = 'usage-pill' + (data.usage >= data.limit ? ' full' : data.usage >= 2 ? ' warn' : '');
-    if (!data.can_analyze) {
-      document.getElementById('limit-banner').style.display = 'block';
-      document.getElementById('reset-days').textContent = 7 - new Date().getDay();
-      document.getElementById('go-btn').disabled = true;
+    if (data.is_superuser) {
+      pill.textContent = '★ Pro';
+      pill.className = 'usage-pill super';
+    } else {
+      pill.textContent = `${data.usage}/${data.limit}`;
+      pill.className = 'usage-pill' + (data.usage >= data.limit ? ' full' : data.usage >= 2 ? ' warn' : '');
+      if (!data.can_analyze) {
+        document.getElementById('limit-banner').style.display = 'block';
+        document.getElementById('reset-days').textContent = 7 - new Date().getDay();
+        document.getElementById('go-btn').disabled = true;
+      }
     }
   } catch(e) { console.error(e); }
 }
@@ -532,7 +559,7 @@ async function handleAuth() {
   btn.disabled = false; btn.textContent = isSignUp ? 'Create Account' : 'Continue with Email';
 }
 async function googleSignIn() {
-  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
   if (error) showAuthMsg(error.message, true);
 }
 async function signOut() {
@@ -660,7 +687,25 @@ function closePricing(){document.getElementById('pricing-modal').classList.remov
 function showComingSoon(){document.getElementById('coming-soon-banner').style.display='block'}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closePricing()});
 
-init();
+async function handleRedirect() {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes('access_token')) return;
+  const all = hash.replace(/^#+/, '');
+  const params = new URLSearchParams(all);
+  const access_token = params.get('access_token');
+  const refresh_token = params.get('refresh_token');
+  if (access_token && refresh_token) {
+    await sb.auth.setSession({ access_token, refresh_token });
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
+async function start() {
+  await handleRedirect();
+  await init();
+}
+
+start();
 </script>
 </body>
 </html>
