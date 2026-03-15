@@ -253,7 +253,7 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
 
 <nav>
   <div>
-    <div class="logo" onclick="goPage('app')">Noitar <em>Notes</em></div>
+    <div class="logo" onclick="session ? goPage('app') : goPage('auth')">Noitar <em>Notes</em></div>
     <div class="logo-sub">AI Study Tool</div>
   </div>
   <div class="nav-links" id="nav-guest">
@@ -467,7 +467,7 @@ nav{width:100%;max-width:700px;display:flex;align-items:center;justify-content:s
 </div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-const API = 'https://noitar-notes.onrender.com';
+const API = 'https://your-app-name.onrender.com';
 const SUPABASE_URL = 'https://iphreeojqmhzaflarfhy.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwaHJlZW9qcW1oemFmbGFyZmh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1NjYyMzUsImV4cCI6MjA4OTE0MjIzNX0.g8gzBNXLZrAhC3yxy9Hidj0FxMt_1lEAJQhWwFnAeos';
 
@@ -479,6 +479,7 @@ let answered = {}, correctMap = {}, isSignUp = false;
 
 // ── ROUTING ───────────────────────────────────────────────────────────────────
 function goPage(name) {
+  if (name === 'app' && !session) { goPage('auth'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
 }
